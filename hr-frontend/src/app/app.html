@@ -1,0 +1,102 @@
+<div class="app-container">
+  
+  <!-- MULTI-PAGE ENTERPRISE HEADER NAVIGATION BAR -->
+  <nav class="navbar">
+    <div class="nav-brand">🏢 HR Enterprise Portal</div>
+    <div class="nav-links">
+      <button 
+        (click)="switchTab('submit')" 
+        [class.active-link]="activeTab === 'submit'" 
+        class="nav-btn">
+        ✍️ Apply for Leave
+      </button>
+      <button 
+        (click)="switchTab('admin')" 
+        [class.active-link]="activeTab === 'admin'" 
+        class="nav-btn">
+        📋 Admin Dashboard 
+        <span class="nav-badge" *ngIf="recordsList.length > 0">{{ recordsList.length }}</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- PAGE ONE VIEW: INDEPENDENT LEAVE APPLICATION FORM LAYOUT -->
+  <div class="page-content" *ngIf="activeTab === 'submit'">
+    <div class="tracker-card">
+      <h2 class="title">Distributed Leave & Medical Tracker</h2>
+      <p class="subtitle">Microservice Architecture Validation Interface</p>
+      <hr class="divider"/>
+
+      <div class="form-group">
+        <label class="form-label">Employee Name:</label>
+        <input [(ngModel)]="employeeName" type="text" placeholder="Enter your full name" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Reason for Medical Leave:</label>
+        <textarea [(ngModel)]="leaveReason" rows="3" placeholder="Briefly describe the medical reason..." class="form-textarea"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Attach Medical Certificate (.pdf / .jpg):</label>
+        <input type="file" (change)="onFileSelected($event)" class="file-input">
+      </div>
+
+      <button (click)="submitToPipelines()" class="submit-btn">
+        Submit to Microservices
+      </button>
+
+      <div *ngIf="nodeLog" class="log-box log-node">
+        <strong class="log-header">🟢 Node.js Microservice Status:</strong>
+        <span class="log-text">{{ nodeLog }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE TWO VIEW: ENTIRELY SEPARATED ADMINISTRATIVE DATA AUDIT PORTAL -->
+  <div class="page-content" *ngIf="activeTab === 'admin'">
+    <div class="admin-card">
+      <div class="admin-header-row">
+        <h3 class="admin-title">📋 HR Admin Management Portal</h3>
+      </div>
+      <hr class="divider"/>
+      
+      <!-- Fallback display placeholder state if database arrays sit empty -->
+      <div *ngIf="recordsList.length === 0" style="text-align: center; color: #64748b; padding: 40px 0; font-size: 15px;">
+        🔍 No employee medical logs registered inside persistent system layers yet.
+      </div>
+
+      <div class="table-responsive" *ngIf="recordsList.length > 0">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Employee Name</th>
+              <th>Medical Reason</th>
+              <th>Certificate File</th>
+              <th style="text-align: center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let record of recordsList">
+              <td class="time-col">{{ record.submissionTimestamp }}</td>
+              <td class="name-col">{{ record.employeeName }}</td>
+              <td>{{ record.leaveReason }}</td>
+              <td>
+                <a [href]="record.attachedDocumentUrl" target="_blank" class="file-link">
+                  📄 {{ record.originalFileName || 'View File' }}
+                </a>
+              </td>
+              <td style="text-align: center;">
+                <button (click)="deleteRecord(record.requestId)" class="delete-btn">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
